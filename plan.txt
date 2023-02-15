@@ -1,0 +1,13 @@
+[-] create directory structure
+[-] create a NPM project and install all dependancies
+    - Dependancies
+        - express
+        - ejs eja-express-layout
+    - Dev dependancies
+        - nodemon
+[-] create express node server - create server.js file
+[-] create Creatre Home page using HTML css 
+    - include Tailwind css
+[-] Create cart page
+    - order summary section 
+    - empty cart section
