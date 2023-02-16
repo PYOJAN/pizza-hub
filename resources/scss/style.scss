@@ -2,7 +2,26 @@
 @tailwind components;
 @tailwind utilities;
 
-html {
-  font-family: "Lato", sans-serif;
-  -webkit-font-smoothing: antialiased;
+@layer base {
+  html {
+    font-family: "Lato", sans-serif;
+    -webkit-font-smoothing: antialiased;
+    height: 4000px;
+  }
+  a {
+    outline: none;
+  }
+  
+}
+
+
+/* Components */
+@layer components {
+  .main {
+    width: 95%;
+    @apply sm:w-[640px] md:w-[768px] lg:w-[1024px] xl:w-[1280px] mx-auto px-4;
+  }
+  .hover-anime {
+    @apply transition-all duration-150 ease-in;
+  }
 }
