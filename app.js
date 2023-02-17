@@ -16,14 +16,37 @@ app.set("view engine", "ejs");
 
 // routes
 app.get("/", (req, res, next) => {
-  res.status(200).render("pages/home", { title: "Real time Pizza App" });
+  res
+    .status(200)
+    .render("pages/customers/home", { title: "Real time Pizza App" });
+});
+
+app.get("/cart", (req, res, next) => {
+  res.status(200).render("pages/customers/cart", { title: "Cart Items" });
+});
+
+app.get("/login", (req, res, next) => {
+  res
+    .status(200)
+    .render("pages/customers/login", {
+      title: "Login",
+      layout: "./layouts/full-screen-layout",
+    });
+});
+app.get("/register", (req, res, next) => {
+  res
+    .status(200)
+    .render("pages/customers/register", {
+      title: "Login",
+      layout: "./layouts/full-screen-layout",
+    });
 });
 
 app.all("*", (req, res, next) => {
   res.status(404).render("pages/404/404", {
     title: "ERROR",
-    layout: "./layouts/error-layout",
+    layout: "./layouts/full-screen-layout",
   });
-})
+});
 
 export default app;

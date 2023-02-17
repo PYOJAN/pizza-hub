@@ -1,0 +1,62 @@
+<section class="bg-rose-50">
+  <div class="main h-screen flex flex-col justify-center items-center">
+    <div class="w-80 p-5 bg-slate-50 shadow-md rounded-md">
+      <h1
+        class="text-lg font-bold tracking-wide border-b-4 text-rose-600 border-rose-400 w-1/2"
+      >
+        Welcome back !
+      </h1>
+
+      <form action="post" class="flex flex-col gap-3 mt-4">
+        <div class="control">
+          <label
+            for="email"
+            class="mb-2 block text-base font-medium text-slate-500 capitalize"
+            >Email</label
+          >
+          <input
+            autocomplete="off"
+            placeholder="example@gmail.com"
+            type="text"
+            id="email"
+            name="email"
+            class="ring-1 ring-rose-200 focus:ring-2 focus:ring-rose-400 focus:shadow-sm rounded-sm w-full h-9 px-4 outline-none"
+          />
+        </div>
+        <div class="control">
+          <label
+            for="email"
+            class="mb-2 block text-base font-medium text-slate-500 capitalize"
+            >Password</label
+          >
+          <input
+            autocomplete="off"
+            placeholder="strong_password"
+            type="password"
+            id="password"
+            name="password"
+            class="ring-1 ring-rose-200 focus:ring-2 focus:ring-rose-400 focus:shadow-sm rounded-sm w-full h-9 px-4 outline-none"
+          />
+        </div>
+
+        <div
+          class="action flex justify-between items-center flex-row w-full mt-3"
+        >
+          <button
+            class="bg-rose-400 px-4 py-2 rounded-full text-rose-50 font-semibold hover:bg-rose-500 hover-anime capitalize"
+          >
+            Login
+          </button>
+
+          <a
+            href="/register"
+            class=" text-rose-300 hover:text-rose-400"
+          >
+            Don't have account?
+          </a>
+        </div>
+      </form>
+    </div>
+    <small class="mt-3 text-slate-300">©2023 Pizza Corp. All rights reserved.</small>
+  </div>
+</section>

@@ -3,10 +3,9 @@
 @tailwind utilities;
 
 @layer base {
-  html {
+  body {
     font-family: "Lato", sans-serif;
     -webkit-font-smoothing: antialiased;
-    height: 4000px;
   }
   a {
     outline: none;
