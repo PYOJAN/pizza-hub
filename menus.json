@@ -1,0 +1,92 @@
+[
+  {
+    "_id": {
+      "$oid": "612b6d37e6d12a6e13789f01"
+    },
+    "name": "Margherita",
+    "image": "margherita.png",
+    "price": "120",
+    "size": "small"
+  },
+  {
+    "_id": {
+      "$oid": "612b6d37e6d12a6e13789f02"
+    },
+    "name": "Pepperoni",
+    "image": "pepperoni.png",
+    "price": "150",
+    "size": "medium"
+  },
+  {
+    "_id": {
+      "$oid": "612b6d37e6d12a6e13789f03"
+    },
+    "name": "Hawaiian",
+    "image": "hawaiian.png",
+    "price": "160",
+    "size": "large"
+  },
+  {
+    "_id": {
+      "$oid": "612b6d37e6d12a6e13789f04"
+    },
+    "name": "Meat Lovers",
+    "image": "meat-lovers.png",
+    "price": "180",
+    "size": "medium"
+  },
+  {
+    "_id": {
+      "$oid": "612b6d37e6d12a6e13789f05"
+    },
+    "name": "Vegetarian",
+    "image": "vegetarian.png",
+    "price": "140",
+    "size": "small"
+  },
+  {
+    "_id": {
+      "$oid": "612b6d37e6d12a6e13789f06"
+    },
+    "name": "Supreme",
+    "image": "supreme.png",
+    "price": "190",
+    "size": "large"
+  },
+  {
+    "_id": {
+      "$oid": "612b6d37e6d12a6e13789f07"
+    },
+    "name": "Mushroom",
+    "image": "mushroom.png",
+    "price": "130",
+    "size": "small"
+  },
+  {
+    "_id": {
+      "$oid": "612b6d37e6d12a6e13789f08"
+    },
+    "name": "BBQ Chicken",
+    "image": "bbq-chicken.png",
+    "price": "170",
+    "size": "medium"
+  },
+  {
+    "_id": {
+      "$oid": "612b6d37e6d12a6e13789f09"
+    },
+    "name": "Four Cheese",
+    "image": "four-cheese.png",
+    "price": "160",
+    "size": "large"
+  },
+  {
+    "_id": {
+      "$oid": "612b6d37e6d12a6e13789f10"
+    },
+    "name": "Pesto",
+    "image": "pesto.png",
+    "price": "150",
+    "size": "medium"
+  }
+]

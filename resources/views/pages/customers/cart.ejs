@@ -1,6 +1,6 @@
 <!-- empty cart -->
+<%if(!cart) {%>
 
-<!--
 <section class="bg-slate-100 py-10">
   <div class="main flex items-center flex-row-reverse justify-around px-16">
     <div class="text-gray-400 flex flex-col items-center">
@@ -461,7 +461,8 @@
     </div>
   </div>
 </section>
--->
+
+<%} else {%>
 
 <!-- cart with order -->
 <section class="bg-slate-100 py-16">
@@ -492,6 +493,8 @@
         </thead>
         <tbody>
           <!-- Ordered Items -->
+          <% cart.items.forEach(item => { %>
+
           <tr class="grid grid-cols-4 border-b-2 py-5">
             <td class="col-span-2 px-4">
               <div class="flex flex-row items-center">
@@ -500,27 +503,34 @@
                 </div>
 
                 <div class="ml-5 text-slate-600">
-                  <h1 class="font-bold text-lg capitalize">Olive Mixed</h1>
+                  <h1 class="font-bold text-lg capitalize"><%=item.name%></h1>
                   <span
                     class="text-xs uppercase font-light text-rose-400 tracking-wider bg-rose-100 px-2 py-1 rounded-full"
-                    >small</span
+                    ><%=item.size%></span
                   >
                 </div>
               </div>
             </td>
             <td class="py-2 text-center flex items-center justify-center">
               <h2 class="uppercase text-sm text-slate-800 tracking-wide">
-                <span>1</span> PCS
+                <span><%=item.qty%></span> PCS
               </h2>
             </td>
             <td class="py-2 text-center flex items-center justify-end px-4">
               <h3
-                class="uppercase text-sm font-bold text-slate-800 tracking-wide"
+                class="uppercase text-sm font-bold w-full text-right text-slate-800 tracking-wide"
               >
-                <span>₹150</span> /-
+                <%if(item.qty !== 1) {%>
+                <div class="w-full flex flex-row justify-between items-center">
+                  <span class="text-lg font-bold text-center">*</span>
+                  <span class="block"> ₹<%=item.price%> /-</span>
+                </div>
+                <%} else {%> <%=item.price%> /-<%}%>
               </h3>
             </td>
           </tr>
+
+          <%})%>
 
           <!-- Total price and address -->
           <tr class="">
@@ -529,7 +539,7 @@
                 <h1 class="mb-4 text-center tracking-wide leading-5">
                   Total Amount:
                   <span class="text-rose-500 text-xl font-bold ml-2"
-                    >₹500 /-</span
+                    >₹<%=cart.totalPrice%> /-</span
                   >
                 </h1>
 
@@ -551,8 +561,9 @@
                 >
                 Order now
               </button> -->
-              <!-- Without Login -->
-                <a href="/login"
+                <!-- Without Login -->
+                <a
+                  href="/login"
                   class="flex justify-center items-center text-base tracking-wide font-medium bg-rose-400 hover:bg-rose-500 hover-anime px-4 py-1 rounded-full text-rose-50 mt-4"
                 >
                   Login to continue
@@ -565,3 +576,5 @@
     </div>
   </div>
 </section>
+
+<%}%>

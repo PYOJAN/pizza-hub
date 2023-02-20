@@ -1,0 +1,23 @@
+<form
+  id="<%= formId %>"
+  class="flex flex-col gap-3 mt-4"
+>
+  <% formFields.forEach(field => { %>
+  <!--Form Fields  -->
+  <%- include('./formField.ejs', {field}) %> <%})%>
+  <!-- Error message -->
+  <%- include('./formErrorMsg.ejs') %>
+
+  <div class="action flex justify-between items-center flex-row w-full mt-3">
+    <button
+      type="submit"
+      class="bg-rose-400 px-4 py-2 rounded-full text-rose-50 font-semibold hover:bg-rose-500 hover-anime capitalize"
+    >
+      <%= btnLabel %>
+    </button>
+
+    <a href="<%= aLink  %>" class="text-rose-300 hover:text-rose-400">
+      <%= aLabel  %>
+    </a>
+  </div>
+</form>

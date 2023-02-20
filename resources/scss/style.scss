@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+// Noty
+@import "~noty/src/noty.scss";
+@import "~noty/src/themes/relax.scss";
+
 @layer base {
   body {
     font-family: "Lato", sans-serif;

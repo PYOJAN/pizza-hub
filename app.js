@@ -1,52 +1,49 @@
+import env from './config'
 import express from "express";
 import expressEjsLayouts from "express-ejs-layouts";
+import session from "express-session";
 import { join } from "path";
+import MongoSessionStore from "connect-mongo";
+import { globalError, error404Handle } from "./error/";
+import webRouters from "./routes/web";
 
-// express App initlizing
 const app = express();
 
-// Static Files
-app.use(express.static("public"));
+const store = MongoSessionStore.create({
+  mongoUrl: process.env.MONGO_URI,
+  dbName: "pizzaHub",
+  collectionName: "cartSession",
+  autoRemove: "native",
+});
 
-// Set template engine
+const oneDay = 1000 * 60 * 60 * 24;
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: true,
+    store,
+    cookie: { secure: false, maxAge: oneDay },
+  })
+);
+
+app.use(express.static("public"));
 app.use(expressEjsLayouts);
 app.set("views", join(__dirname, "/resources", "/views"));
 app.set("layout", "./layouts/main-layout");
 app.set("view engine", "ejs");
 
-// routes
-app.get("/", (req, res, next) => {
-  res
-    .status(200)
-    .render("pages/customers/home", { title: "Real time Pizza App" });
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+app.use((req, res, next) => {
+  res.locals.cart = req.session.cart;
+
+  next();
 });
 
-app.get("/cart", (req, res, next) => {
-  res.status(200).render("pages/customers/cart", { title: "Cart Items" });
-});
+app.use("/", webRouters);
 
-app.get("/login", (req, res, next) => {
-  res
-    .status(200)
-    .render("pages/customers/login", {
-      title: "Login",
-      layout: "./layouts/full-screen-layout",
-    });
-});
-app.get("/register", (req, res, next) => {
-  res
-    .status(200)
-    .render("pages/customers/register", {
-      title: "Login",
-      layout: "./layouts/full-screen-layout",
-    });
-});
-
-app.all("*", (req, res, next) => {
-  res.status(404).render("pages/404/404", {
-    title: "ERROR",
-    layout: "./layouts/full-screen-layout",
-  });
-});
+app.all("*", error404Handle);
+app.use(globalError);
 
 export default app;
