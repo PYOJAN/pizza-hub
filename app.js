@@ -1,11 +1,12 @@
-import env from './config'
 import express from "express";
 import expressEjsLayouts from "express-ejs-layouts";
 import session from "express-session";
+import cookieParser from "cookie-parser";
 import { join } from "path";
 import MongoSessionStore from "connect-mongo";
 import { globalError, error404Handle } from "./error/";
 import webRouters from "./routes/web";
+import apiRouters from "./routes/api"
 
 const app = express();
 
@@ -33,6 +34,7 @@ app.set("views", join(__dirname, "/resources", "/views"));
 app.set("layout", "./layouts/main-layout");
 app.set("view engine", "ejs");
 
+app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use((req, res, next) => {
@@ -42,6 +44,7 @@ app.use((req, res, next) => {
 });
 
 app.use("/", webRouters);
+app.use("/api/v1/auth", apiRouters)
 
 app.all("*", error404Handle);
 app.use(globalError);

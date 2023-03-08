@@ -50,11 +50,61 @@ class AuthControllers {
     //   subject: "Testing mail",
     //   text: JSON.stringify(newUser),
     // });
-    res.json({
+
+    const otpToken = `${newUser._id}.${hashedOtpData.hash}.${hashedOtpData.exIn}`;
+    const expireIn = new Date(Number(new Date()) + hashedOtpData.exIn); // cookies life for the 2 mintus
+    res.cookie('otpToken', otpToken, {
+      expires: expireIn,
+      secure: true,
+      httpOnly: true,
+    });
+    res.status(201).json({
       message: "Register successfully",
-      otpInfo: hashedOtpData,
+      status: "success",
+      otp: hashedOtpData.OTP
     });
   });
+
+
+
+  /**
+   * OTP vetification activating user
+   */
+  /**
+ * Activates a user account and sends a JWT token in response.
+ * @async
+ * @function
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ * @param {Function} next - Express next middleware function.
+ * @returns {Promise<void>} - Promise that resolves when the response is sent.
+ * @throws {Error} - If there was an error activating the user or generating a JWT token.
+ */
+  verifyOtpAndActiveUser = catchAsync(async (req, res, next) => {
+    // Activate the user account
+    const user = await User.findByIdAndUpdate(req.user, { isActive: true }, { new: true });
+
+    // Generate a JWT token for the user
+    const H = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+    const expireIn = new Date(Number(new Date()) + H);
+    const token = user.getJwtToken();
+
+    // Send the token in a secure and httpOnly cookie
+    res.cookie('jwt', token, {
+      expires: expireIn,
+      secure: true,
+      httpOnly: true,
+    });
+
+    // Send success response with JWT token
+    res.status(201).json({
+      status: "success",
+      message: "User successfully activated",
+      token,
+    });
+  });
+
+
 
   /**
    * Returns an error message for any method other than GET on the home page route.

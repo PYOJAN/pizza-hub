@@ -2,6 +2,7 @@ import { Schema, model } from "mongoose";
 import { hash } from "bcrypt";
 import { sign } from "jsonwebtoken";
 import { isValidEmail } from "../../utils/utils";
+import env from "../../config";
 
 const userSchema = new Schema(
   {
@@ -50,20 +51,40 @@ const userSchema = new Schema(
   }
 );
 
-userSchema.pre("save", async function (next) {
+
+/**
+ * Middleware to hash the user password before saving to the database.
+ * @param {Function} next - The next function to be called in the middleware chain.
+ */
+userSchema.pre('save', async function (next) {
+  // Only hash the password if it has been modified
+  if (!this.isModified('password')) return next();
+
+  // Hash the password with bcryptjs
   const encryptedPassword = await hash(this.password, 12);
   this.password = encryptedPassword;
 
+  // Remove confirmPassword field from the document
   this.confirmPassword = undefined;
   next();
 });
 
-userSchema.methods.getJwtToken = function () {
-  const token = sign(
-    { id: this._id, email: this.email },
-    process.env.JWT_SECRET,
-    { expiresIn: 1000 * 5 }
-  );
+/**
+ * Generates a JWT token for the user.
+ * @param {string} expIn - The token expiration time in seconds.
+ * @returns {string} The JWT token.
+ */
+userSchema.methods.getJwtToken = function (expIn) {
+  const options = {
+    expiresIn: expIn || "24h", // use the provided expiration time or default to 24h
+  }
+
+  const payload = {
+    id: this._id,
+    email: this.email
+  }
+
+  const token = sign(payload, env.JWT_SECRET, options);
 
   return token;
 };

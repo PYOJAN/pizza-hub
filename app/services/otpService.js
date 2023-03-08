@@ -39,34 +39,21 @@ class OtpService {
   /**
    * Verifies the given OTP with the hash and user data.
    *
-   * @param {string} hashData - The hashData hash to verify.
-   * @param {string} userData - The same user data which use for generating OTP.
+   * @param {{exIn: number, hash: string}} hashData - The hash data to verify.
+   * @param {string} userData - The user data which was used for generating OTP.
    * @param {number} otp - The OTP to verify.
-   * @returns {{isValid, reason}} True if the OTP is valid, false otherwise and reason.
-   * @throws {TypeError} If the hashData parameter is not an object, the userData parameter is not a string, or the otp parameter is not a number.
+   * @returns {{isValid: boolean, reason: string}} - An object with the properties `isValid` and `reason`.
+   * - `isValid`: A boolean indicating whether the OTP is valid or not.
+   * - `reason`: A string explaining the reason if the OTP is not valid.
    */
   verifyOtp(hashData, userData, otp) {
-    if (!otp) throw new Error("otp must have value");
-
-    if (typeof hashData !== "string" || !hashData.trim())
-      throw new TypeError("The hashData must have a non-empty string");
-
-    if (typeof userData !== "string" || !userData.trim())
-      throw new TypeError("The userData must have a non-empty string");
-
-    if (typeof otp !== "number") throw new TypeError("OTP must be a number");
-
-    const currentTimestamp = Date.now();
-
-    if (currentTimestamp > hashData.exIn) {
-      // OTP has expired
-      return { isValid: false, reason: "OTP has expired" };
-    }
 
     const dataToBeHash = `${userData}.${otp}.${hashData.exIn}`;
     const hash = createHmac(this.#algorithm, this.#key)
       .update(dataToBeHash)
       .digest("hex");
+    
+    console.log(hash, hashData.hash);
 
     if (hash !== hashData.hash) {
       // OTP is valid
