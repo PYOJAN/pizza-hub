@@ -4,7 +4,7 @@ name: 'password', label: 'Password', type: 'password' } ];%>
 <section class="bg-rose-50">
   <div class="main h-screen flex flex-col justify-center items-center">
     <div class="w-80 p-5 bg-slate-50 shadow-md rounded-md">
-     <%- include('../../partials/form/formHeader.ejs', {message: "Welcome back :)"}) %>
+     <%- include('../../partials/form/formHeader.ejs', {message: "Welcome back :)", isOtp: false}) %>
 
       <%- include("../../partials/form/form.ejs", {formFields, formId:"login",
       btnLabel: "Submit", aLink: "/register", aLabel: "Don't have account?"}) %>

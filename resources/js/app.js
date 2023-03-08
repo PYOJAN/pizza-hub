@@ -1,6 +1,6 @@
 import axios from "axios";
 import ShowNoty from "./notyfy";
-import { registerNewUser } from "./registerUser";
+import { formValidate } from "./formValidator";
 import { addError } from "./utils";
 import { isValidEmail } from "../../utils/utils";
 
@@ -59,11 +59,13 @@ registerForm &&
       },
     ];
 
-    registerNewUser(registerForm, fields, (formData, errorEl) => {
+    formValidate(registerForm, fields, (formData, errorEl) => {
       axios
-        .post("/register", formData)
-        .then((data) => {
-          console.log(data.data);
+        .post("/api/v1/auth/register", formData)
+        .then((res) => {
+          if (res.status === 201) {
+            location.replace('/otp-verify')
+          }
         })
         .catch((err) => {
           const errData = err.response.data;
@@ -71,6 +73,68 @@ registerForm &&
         });
     });
   });
+
+
+
+const otpVerificationForm = document.getElementById('otpVerification');
+if (otpVerificationForm) {
+  otpVerificationForm.addEventListener("submit", e => {
+    e.preventDefault();
+    const fields = [
+      {
+        name: "otp",
+        error: "Please enter a 4-digit numeric code",
+        validate: (value) => /^\d{4}$/.test(value),
+      }
+    ]
+
+    formValidate(otpVerificationForm, fields, (formData, errorEl) => {
+      axios
+        .post("/api/v1/auth/verify-otp", formData)
+        .then((res) => {
+          if (res.status === 201) {
+            location.replace('/')
+          }
+        })
+        .catch((err) => {
+          const errData = err.response.data;
+          addError(errorEl, errData.message);
+        });
+    })
+  })
+
+  const countdown = () => {
+    const otpCountDown = document.getElementById('otp-cuntdown');
+    let timeLeft = 120;
+    const timerInterval = setInterval(() => {
+      const minutes = Math.floor(timeLeft / 60).toString().padStart(2, '0');
+      const seconds = (timeLeft % 60).toString().padStart(2, '0');
+      otpCountDown.innerText =
+        `${minutes}:${seconds}`;
+      if (timeLeft-- <= 0) {
+        clearInterval(timerInterval);
+
+        const resendOtp = document.getElementById('resend-otp');
+        resendOtp.classList.remove("hidden");
+
+        resendOtp.addEventListener("click", e => {
+          e.preventDefault();
+
+          console.log("resend OTP")
+
+          axios.get("/api/v1/auth/resend-otp").then(res => {
+            console.log(res);
+          }).catch(err => {
+            alert(err.message)
+          })
+        })
+      }
+    }, 1000);
+  }
+  countdown();
+}
+
+
 
 // Login user
 const loginForm = document.querySelector("#login");

@@ -11,7 +11,7 @@ aLink: "/login", aLabel: "All ready have account."}%>
   <div class="main h-screen flex flex-col justify-center items-center">
     <div class="w-80 p-5 bg-slate-50 shadow-md rounded-md">
       <!-- form Header -->
-      <%- include('../../partials/form/formHeader.ejs', { message: "Register Now"}) %>
+      <%- include('../../partials/form/formHeader.ejs', { message: "Register Now", isOtp: false}) %>
 
       <!-- Form -->
       <%- include("../../partials/form/form.ejs", form) %>

@@ -1,3 +1,5 @@
+import { verify } from "jsonwebtoken";
+import env from "../../../config";
 import { catchAsync } from "../../../utils/utils";
 import User from "../../models/userModel";
 import Otp from "../../services/otpService";
@@ -25,6 +27,8 @@ class GaurdClass {
     // Get OTP token from cookie and OTP value from request body
     const { otpToken } = req.cookies;
     const { otp } = req.body;
+
+    console.log(otpToken);
 
     // Check if OTP token and OTP value are present
     if (!otpToken || !otp) return next(new Error('Unauthorized attempt'));
@@ -54,6 +58,24 @@ class GaurdClass {
 
     // Set user ID on request object
     req.user = user._id;
+
+    next();
+  })
+
+
+  /**
+   * resend otp
+   */
+  checkResendOtpRefreshToken = catchAsync(async (req, res, next) => {
+
+    const { refreshToken } = req.cookies;
+    if (!refreshToken) return next(Error("unauthorized attempt"));
+
+    const [_, token] = refreshToken.split(" ");
+
+    const user =  verify(token, env.JWT_SECRET);
+
+    req.user = user;
 
     next();
   })

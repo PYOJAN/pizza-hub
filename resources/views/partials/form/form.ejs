@@ -16,8 +16,13 @@
       <%= btnLabel %>
     </button>
 
-    <a href="<%= aLink  %>" class="text-rose-300 hover:text-rose-400">
-      <%= aLabel  %>
-    </a>
+    <%if(formId === "otpVerification") {%>
+      <button id="resend-otp" class="text-rose-400 underline underline-offset-4 hidden">Resend OTP</button>
+      <%} else {%>
+        <a href="<%= aLink  %>" class="text-rose-300 hover:text-rose-400">
+          <%= aLabel  %>
+        </a>
+      <%} %>
+
   </div>
 </form>

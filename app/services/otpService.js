@@ -4,14 +4,12 @@ import env from "../../config";
 class OtpService {
   #key;
   #ttl;
-  #expireIn;
   #algorithm;
 
   constructor() {
     this.#algorithm = "sha256";
     this.#key = env.OTP_SECRET;
     this.#ttl = 1000 * 60 * 2; // 2 minutes OTP time to live
-    this.#expireIn = Date.now() + this.#ttl;
   }
 
   /**
@@ -25,15 +23,17 @@ class OtpService {
   genOtp(userData) {
     if (typeof userData !== "string" || !userData.trim())
       throw new TypeError(" The userData must be a non-empty string");
+    
+    const exIn = Date.now() + this.#ttl;
 
     const OTP = randomInt(1000, 9999);
-    const dataToBeHash = `${userData}.${OTP}.${this.#expireIn}`;
+    const dataToBeHash = `${userData}.${OTP}.${exIn}`;
 
     const hash = createHmac(this.#algorithm, this.#key)
       .update(dataToBeHash)
       .digest("hex");
 
-    return { hash, OTP, exIn: this.#expireIn };
+    return { hash, OTP, exIn };
   }
 
   /**

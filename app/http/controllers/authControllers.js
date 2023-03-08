@@ -43,6 +43,7 @@ class AuthControllers {
     const hashedOtpData = Otp.genOtp(
       JSON.stringify({ email: newUser.email, id: newUser._id })
     );
+    console.log(hashedOtpData.OTP)
 
     // Sending verification mail to user
     // sendMail({
@@ -51,6 +52,16 @@ class AuthControllers {
     //   text: JSON.stringify(newUser),
     // });
 
+    // Refresh Token for resend OTP if it is expired
+    const expIn = new Date(Number(new Date()) + 1000 * 60 * 15); // cookies life for the 15 mintus
+    const refreshToken = newUser.getJwtToken("15m");
+    res.cookie('refreshToken', `RefreshToken ${refreshToken}`, {
+      expires: expIn,
+      secure: true,
+      httpOnly: true,
+    });
+
+    // OTP Token
     const otpToken = `${newUser._id}.${hashedOtpData.hash}.${hashedOtpData.exIn}`;
     const expireIn = new Date(Number(new Date()) + hashedOtpData.exIn); // cookies life for the 2 mintus
     res.cookie('otpToken', otpToken, {
@@ -66,6 +77,13 @@ class AuthControllers {
   });
 
 
+
+  verifyOtpRender = catchAsync(async (req, res, next) => {
+    return res.status(200).render("pages/customers/otp", {
+      title: "OTP verification",
+      layout: "./layouts/full-screen-layout",
+    });
+  });
 
   /**
    * OTP vetification activating user
@@ -89,8 +107,12 @@ class AuthControllers {
     const expireIn = new Date(Number(new Date()) + H);
     const token = user.getJwtToken();
 
+    // clearing otp token form cookies
+    res.clearCookie("otpToken")
+    res.clearCookie("refreshToken")
+
     // Send the token in a secure and httpOnly cookie
-    res.cookie('jwt', token, {
+    res.cookie('token', `Bearer ${token}`, {
       expires: expireIn,
       secure: true,
       httpOnly: true,
@@ -101,6 +123,53 @@ class AuthControllers {
       status: "success",
       message: "User successfully activated",
       token,
+    });
+  });
+
+
+  // Resend Otp 
+  resendOtpForUserActive = catchAsync(async (req, res, next) => {
+
+    const { id } = req.user;
+
+    const user = await User.findById(id);
+
+    if (!user) return next(new Error("This user is not registered or has been deleted"))
+
+    // Generating OTP
+    const hashedOtpData = Otp.genOtp(
+      JSON.stringify({ email: user.email, id: user._id })
+    );
+    console.log(hashedOtpData.OTP)
+
+    // Sending verification mail to user
+    // sendMail({
+    //   to: "pintuprajapati4@gmail.com",
+    //   subject: "Testing mail",
+    //   text: JSON.stringify(newUser),
+    // });
+
+    // Refresh Token for resend OTP if it is expired
+    const expIn = new Date(Number(new Date()) + 1000 * 60 * 15); // cookies life for the 15 mintus
+    const refreshToken = user.getJwtToken("15m");
+    res.cookie('refreshToken', `RefreshToken ${refreshToken}`, {
+      expires: expIn,
+      secure: true,
+      httpOnly: true,
+    });
+
+    // OTP Token
+    const otpToken = `${user._id}.${hashedOtpData.hash}.${hashedOtpData.exIn}`;
+    const expireIn = new Date(Number(new Date()) + hashedOtpData.exIn); // cookies life for the 2 mintus
+    res.cookie('otpToken', otpToken, {
+      expires: expireIn,
+      secure: true,
+      httpOnly: true,
+    });
+    res.status(201).json({
+      message: "OTP resended successfully",
+      status: "success",
+      otp: hashedOtpData.OTP
     });
   });
 

@@ -47,7 +47,15 @@ router.post("/register", [Gaurd.checkBody], authControllers.register);
  * @throws {Error} If there was an error while registering the user.
  * @access SEMI protected - this route only can be accessed by authoried pepole how have OTP token.
  */
-router.post("/verify-otp", [Gaurd.checkOtpTokenAndOtpBody], authControllers.verifyOtpAndActiveUser)
+router.post("/verify-otp", [Gaurd.checkOtpTokenAndOtpBody], authControllers.verifyOtpAndActiveUser);
+
+
+
+/**
+ * resend Otp if expire
+ * access with refresh token
+ */
+router.get("/resend-otp", [Gaurd.checkResendOtpRefreshToken], authControllers.resendOtpForUserActive);
 
 
 

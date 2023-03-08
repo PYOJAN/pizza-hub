@@ -5,13 +5,13 @@ import { addError } from "./utils";
  *
  * @param {HTMLFormElement} form - The HTML form element containing the user data.
  * @param {Array<Object>} fields - An array of field objects, each with a `name`, `validate` function, and `error` message.
- * @param {function} callback - A function to call with the validated form data.
+ * @param {function} onSuccess - A function to call with the validated form data.
  * @throws {TypeError} Will throw an error if `form` is not an instance of HTMLFormElement.
  * @throws {TypeError} Will throw an error if `fields` is not an array or an empty array.
  * @throws {TypeError} Will throw an error if any object in `fields` does not contain `name`, `validate` function, and `error` message properties.
- * @throws {TypeError} Will throw an error if `callback` is not a function.
+ * @throws {TypeError} Will throw an error if `onSuccess` is not a function.
  */
-export const registerNewUser = (form, fields = [], callback) => {
+export const formValidate = (form, fields = [], onSuccess) => {
   // Validate form parameter
   if (!(form instanceof HTMLFormElement)) {
     throw new TypeError("Invalid form parameter. Expected an HTMLFormElement.");
@@ -47,9 +47,9 @@ export const registerNewUser = (form, fields = [], callback) => {
     }
   }
 
-  // Validate callback parameter
-  if (typeof callback !== "function") {
-    throw new TypeError("Invalid callback parameter. Expected a function.");
+  // Validate onSuccess parameter
+  if (typeof onSuccess !== "function") {
+    throw new TypeError("Invalid onSuccess parameter. Expected a function.");
   }
 
   const errorDiv = document.querySelector(".errorDiv");
@@ -68,6 +68,6 @@ export const registerNewUser = (form, fields = [], callback) => {
 
   if (isValid) {
     errorDiv.classList.add("hidden");
-    callback(formObject, errorDiv);
+    onSuccess(formObject, errorDiv);
   }
 };

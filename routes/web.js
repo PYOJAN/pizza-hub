@@ -29,7 +29,10 @@ router.get("/login", authControllers.login);
  * @access Public
  */
 router
-  .get("/register", authControllers.registerRender)
+  .get("/register", authControllers.registerRender);
+
+
+router.get("/otp-verify", authControllers.verifyOtpRender)
 
 /**
  * Handles the Cart page route.

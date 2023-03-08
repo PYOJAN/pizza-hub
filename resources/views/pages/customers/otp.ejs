@@ -1,0 +1,13 @@
+<% const formFields = [ { name: 'otp', label: 'Valid OTP', type: 'text'}];%>
+
+<section class="bg-rose-50">
+  <div class="main h-screen flex flex-col justify-center items-center">
+    <div class="w-80 p-5 bg-slate-50 shadow-md rounded-md">
+      <%- include('../../partials/form/formHeader.ejs', {message: "OTP Verification", isOtp: true}) %>
+
+      <%- include("../../partials/form/form.ejs", {formFields, formId:"otpVerification",
+        btnLabel: "Submit", aLink: "/register", aLabel: "Don't have account?"}) %>
+    </div>
+    <small class="mt-3 text-slate-300">©2023 Pizza Corp. All rights reserved.</small>
+  </div>
+</section>
