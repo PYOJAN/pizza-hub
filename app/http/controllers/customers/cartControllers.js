@@ -9,7 +9,13 @@ class CartControllers {
   cart = catchAsync(async (req, res, next) => {
     return res
       .status(200)
-      .render("pages/customers/cart", { title: "Cart Items" });
+      .render("pages/customers/cart", {
+        title: "Cart Items",
+        user: {
+          isLogin: req.user ? true : false,
+          details: req.user
+        }
+      });
   });
 
   /**

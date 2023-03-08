@@ -8,12 +8,17 @@ class HomeController {
    * @returns {Object} Rendered view of the home page
    */
   index = catchAsync(async (req, res, next) => {
+
     const menuItems = await Menu.find();
     return res
       .status(200)
       .render("pages/customers/home", {
         title: "Real time Pizza App",
         menus: menuItems,
+        user: {
+          isLogin: req.user ? true : false,
+          details: req.user
+        }
       });
   });
 

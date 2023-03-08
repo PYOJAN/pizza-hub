@@ -52,12 +52,33 @@ router.post("/verify-otp", [Gaurd.checkOtpTokenAndOtpBody], authControllers.veri
 
 
 /**
- * resend Otp if expire
- * access with refresh token
+ * Resends OTP if it has expired
+ * Access with refresh token
+ * @param {object} req - The request object
+ * @param {string} req.cookies - The authorization header containing the refresh token
+ * @param {object} res - The response object
+ * @param {function} next - The next function to be called
  */
 router.get("/resend-otp", [Gaurd.checkResendOtpRefreshToken], authControllers.resendOtpForUserActive);
 
 
+/**
+ * Logs in the user and issues a JWT token that is valid for 24 hours
+ * @param {object} req - The request object
+ * @param {object} req.body - The body of the request
+ * @param {string} req.body.email - The email of the user
+ * @param {string} req.body.password - The password of the user
+ * @param {object} res - The response object
+ * @param {function} next - The next function to be called
+ */
+router.post("/login", authControllers.login);
+
+
+
+/**
+ * login the user and issue the JWT token for 24H
+ */
+router.post("/login", authControllers.login)
 
 
 /**

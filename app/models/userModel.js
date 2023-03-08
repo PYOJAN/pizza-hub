@@ -1,5 +1,5 @@
 import { Schema, model } from "mongoose";
-import { hash } from "bcrypt";
+import { hash, compare } from "bcrypt";
 import { sign } from "jsonwebtoken";
 import { isValidEmail } from "../../utils/utils";
 import env from "../../config";
@@ -75,18 +75,28 @@ userSchema.pre('save', async function (next) {
  * @returns {string} The JWT token.
  */
 userSchema.methods.getJwtToken = function (expIn) {
+  const ttl = expIn || "24h";
   const options = {
-    expiresIn: expIn || "24h", // use the provided expiration time or default to 24h
+    expiresIn: ttl, // use the provided expiration time or default to 24h
   }
 
   const payload = {
     id: this._id,
-    email: this.email
+    email: this.email,
+    name: this.name
   }
 
   const token = sign(payload, env.JWT_SECRET, options);
+  const H = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+  const expireIn = new Date(Number(new Date()) + H);
+  return { token, expireIn: expIn || expireIn };
+};
 
-  return token;
+
+userSchema.methods.validatePassword = async function (password, encryPass) {
+  // Use bcrypt to compare the plain text password with the hashed password
+  const isMatch = await compare(password, encryPass);
+  return isMatch;
 };
 
 const User = model("User", userSchema);

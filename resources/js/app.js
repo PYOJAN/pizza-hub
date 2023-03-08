@@ -8,9 +8,10 @@ const cartAddBtns = document.querySelectorAll(".cart-add-btn");
 
 const updateCart = async (pizza) => {
   const totalCartQty = document.querySelector(".total-cart-qty");
+  console.log(pizza);
   try {
     totalCartQty.innerText++;
-    const res = await axios.post("/update-cart", pizza);
+    const res = await axios.post("/api/v1/auth/update-cart", pizza);
 
     if (res.status === 201) {
       ShowNoty().success("Item successfully Added to cart.");
@@ -135,6 +136,13 @@ if (otpVerificationForm) {
 }
 
 
+const userAvatar = document.querySelector('.user-avatar');
+userAvatar && userAvatar.addEventListener("click", e => {
+  document.getElementById('userDropdown').classList.toggle('hidden');
+});
+
+
+
 
 // Login user
 const loginForm = document.querySelector("#login");
@@ -155,7 +163,13 @@ loginForm &&
       },
     ];
 
-    registerNewUser(loginForm, fields, (data) => {
-      console.log(data);
+    formValidate(loginForm, fields, (data, errorEl) => {
+      axios.post("/api/v1/auth/login", data).then(res => {
+        if (res.status === 200) {
+          location.replace("/");
+        }
+      }).catch(err => {
+        console.log(err);
+      })
     });
   });

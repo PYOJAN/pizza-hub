@@ -9,12 +9,65 @@ class AuthControllers {
    * @route GET /login
    * @returns {Object} Rendered view of the Login page
    */
-  login = catchAsync(async (req, res, next) => {
+  loginRender = catchAsync(async (req, res, next) => {
     return res.status(200).render("pages/customers/login", {
       title: "Login",
       layout: "./layouts/full-screen-layout",
     });
   });
+
+  /**
+   * Logs in a user with the provided email and password
+   * @param {object} req - The request object
+   * @param {object} res - The response object
+   * @param {function} next - The next function to be called
+   */
+  login = catchAsync(async (req, res, next) => {
+    /**
+     * Destructure the email and password from the request body
+     * @type {string}
+     */
+    const { email, password } = req.body;
+
+    console.log(email, password)
+
+    /**
+     * Find the user with the provided email address and select the password field
+     * @type {User}
+     */
+    const user = await User.findOne({ email }).select("+password");
+
+    if (!user) return next(new Error("This user is not registered yet!"));
+
+    /**
+     * Validate the password provided against the hashed password stored in the database
+     * @type {boolean}
+     */
+    const isValidPass = await user.validatePassword(password, user.password);
+
+    if (!isValidPass) return next(new Error("Invalid credentials"));
+
+    /**
+     * Get the JSON Web Token (JWT) and expiration time for the user
+     * @type {object}
+     * @property {string} token - The JWT for the user
+     * @property {Date} expireIn - The date when the JWT will expire
+     */
+    const { token, expireIn } = user.getJwtToken();
+
+    /**
+     * Send the token in a secure and httpOnly cookie
+     */
+    res.cookie("token", `Bearer ${token}`, {
+      expires: expireIn,
+      secure: true,
+      httpOnly: true,
+    });
+
+    res.status(200).json({ status: "success", message: "User logged in" });
+  });
+
+
   /**
    * Renders the Register page with relevant content.
    * @route GET /login
@@ -103,9 +156,9 @@ class AuthControllers {
     const user = await User.findByIdAndUpdate(req.user, { isActive: true }, { new: true });
 
     // Generate a JWT token for the user
-    const H = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
-    const expireIn = new Date(Number(new Date()) + H);
-    const token = user.getJwtToken();
+    // const H = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+    // const expireIn = new Date(Number(new Date()) + H);
+    const { token, expireIn } = user.getJwtToken();
 
     // clearing otp token form cookies
     res.clearCookie("otpToken")
@@ -172,6 +225,24 @@ class AuthControllers {
       otp: hashedOtpData.OTP
     });
   });
+
+  /**
+    * Logout the user by clearing the authentication token cookie and redirecting to the home page.
+    *
+    * @function
+    * @async
+    * @param {object} req - The Express request object.
+    * @param {object} res - The Express response object.
+    * @param {function} next - The Express next middleware function.
+    * @returns {void}
+    */
+  logout = catchAsync(async (req, res, next) => {
+    // Clear the authentication token cookie
+    res.clearCookie("token");
+    // Redirect to the home page
+    res.status(301).redirect('/');
+  });
+
 
 
 

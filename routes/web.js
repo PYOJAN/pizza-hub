@@ -20,19 +20,40 @@ router.get("/", homeController.index);
  * @returns {Object} Rendered view of the Login page
  * @access Public
  */
-router.get("/login", authControllers.login);
+router.get("/login", authControllers.loginRender);
 
 /**
- * Handles the Register page route.
- * @route GET /register
- * @returns {Object} Rendered view of the Register page
- * @access Public
+ * Renders the Register page.
+ *
+ * @name Get Register Page
+ * @function
+ * @memberof module:authRoutes
+ * @inner
+ * @param {Object} req - The Express Request object.
+ * @param {Object} res - The Express Response object.
+ * @param {Function} next - The next function to be called in the middleware chain.
+ * @returns {void}
+ * @throws {Error} If there is an error rendering the page.
  */
-router
-  .get("/register", authControllers.registerRender);
+
+router.get("/register", authControllers.registerRender);
 
 
-router.get("/otp-verify", authControllers.verifyOtpRender)
+/**
+ * Renders the OTP verification page.
+ *
+ * @name Get OTP Verification Page
+ * @function
+ * @memberof module:authRoutes
+ * @inner
+ * @param {Object} req - The Express Request object.
+ * @param {Object} res - The Express Response object.
+ * @param {Function} next - The next function to be called in the middleware chain.
+ * @returns {void}
+ * @throws Will redirect to home page if `otpToken` and `refreshToken` cookies are not present.
+ */
+
+router.get("/otp-verify", [Gaurd.otpPageProtect], authControllers.verifyOtpRender);
 
 /**
  * Handles the Cart page route.
