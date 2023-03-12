@@ -107,18 +107,17 @@ class AuthControllers {
 
     // Refresh Token for resend OTP if it is expired
     const expIn = new Date(Number(new Date()) + 1000 * 60 * 15); // cookies life for the 15 mintus
-    const refreshToken = newUser.getJwtToken("15m");
-    res.cookie('refreshToken', `RefreshToken ${refreshToken}`, {
+    const {token, _} = newUser.getJwtToken("15m");
+    res.cookie('refreshToken', `RefreshToken ${token}`, {
       expires: expIn,
       secure: true,
       httpOnly: true,
     });
-
     // OTP Token
     const otpToken = `${newUser._id}.${hashedOtpData.hash}.${hashedOtpData.exIn}`;
-    const expireIn = new Date(Number(new Date()) + hashedOtpData.exIn); // cookies life for the 2 mintus
+    const ttl = new Date(Number( hashedOtpData.exIn)); // cookies life for the 2 mintus
     res.cookie('otpToken', otpToken, {
-      expires: expireIn,
+      expires: ttl,
       secure: true,
       httpOnly: true,
     });
@@ -204,8 +203,8 @@ class AuthControllers {
 
     // Refresh Token for resend OTP if it is expired
     const expIn = new Date(Number(new Date()) + 1000 * 60 * 15); // cookies life for the 15 mintus
-    const refreshToken = user.getJwtToken("15m");
-    res.cookie('refreshToken', `RefreshToken ${refreshToken}`, {
+    const {token, expireIn} = user.getJwtToken("15m");
+    res.cookie('refreshToken', `RefreshToken ${token}`, {
       expires: expIn,
       secure: true,
       httpOnly: true,
@@ -213,9 +212,9 @@ class AuthControllers {
 
     // OTP Token
     const otpToken = `${user._id}.${hashedOtpData.hash}.${hashedOtpData.exIn}`;
-    const expireIn = new Date(Number(new Date()) + hashedOtpData.exIn); // cookies life for the 2 mintus
+    const ttl = new Date(Number(new Date()) + hashedOtpData.exIn); // cookies life for the 2 mintus
     res.cookie('otpToken', otpToken, {
-      expires: expireIn,
+      expires: ttl,
       secure: true,
       httpOnly: true,
     });

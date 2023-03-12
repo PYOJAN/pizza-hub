@@ -11,7 +11,7 @@ const router = Router();
 /**
  * Handles the "update cart" route, which updates the contents of a user's shopping cart.
  *
- * @route POST /update-cart
+ * @route POST /api/v1/auth/update-cart
  * @param {Object} req - The request object.
  * @param {Object} res - The response object.
  * @returns {Object} An object representing the updated cart.
@@ -24,7 +24,7 @@ router.post("/update-cart", cartControllers.updateCart);
  * 
  * Registers a new user and returns cookies with token.
  *
- * @route POST /register
+ * @route POST /api/v1/auth/verify-otp
  * @param {Object} req - The request object.
  * @param {Object} res - The response object.
  * @param {Function} next - The next middleware function.
@@ -39,7 +39,7 @@ router.post("/register", [Gaurd.checkBody], authControllers.register);
  * 
  * Verifing activation OTP Token and OTP.
  *
- * @route POST /verify-otp
+ * @route POST /api/v1/auth/verify-otp
  * @param {Object} req - The request object.
  * @param {Object} res - The response object.
  * @param {Function} next - The next middleware function.
@@ -54,6 +54,8 @@ router.post("/verify-otp", [Gaurd.checkOtpTokenAndOtpBody], authControllers.veri
 /**
  * Resends OTP if it has expired
  * Access with refresh token
+ * 
+ * @route GET /api/v1/auth/resend-otp
  * @param {object} req - The request object
  * @param {string} req.cookies - The authorization header containing the refresh token
  * @param {object} res - The response object
@@ -64,6 +66,8 @@ router.get("/resend-otp", [Gaurd.checkResendOtpRefreshToken], authControllers.re
 
 /**
  * Logs in the user and issues a JWT token that is valid for 24 hours
+ * 
+ * @route POST /api/v1/auth/login
  * @param {object} req - The request object
  * @param {object} req.body - The body of the request
  * @param {string} req.body.email - The email of the user
@@ -76,9 +80,13 @@ router.post("/login", authControllers.login);
 
 
 /**
- * login the user and issue the JWT token for 24H
+ * Logs out the currently authenticated user and invalidates the JWT token issued.
+ * @route GET /api/v1/auth/logout
+ * @group Authentication - Operations for user authentication
+ * @returns {object} HTTP response indicating the success or failure of the operation
+ * @throws {UnauthorizedError} If the user is not authenticated
  */
-router.post("/login", authControllers.login)
+router.get("/logout", authControllers.logout)
 
 
 /**
@@ -86,7 +94,7 @@ router.post("/login", authControllers.login)
  * @route *
  * @returns {Error} Error message for invalid method
  */
-router.all(/^\/(login|register|update-cart)?$/i, authControllers.error);
+router.all(/^\/(login|register|update-cart|update-cart|verify-otp|resend-otp|logout)?$/i, authControllers.error);
 
 
 

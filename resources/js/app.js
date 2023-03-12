@@ -104,34 +104,55 @@ if (otpVerificationForm) {
     })
   })
 
+  // Define a function named 'countdown'
   const countdown = () => {
+    // Get the element with ID 'otp-cuntdown' to show left time
     const otpCountDown = document.getElementById('otp-cuntdown');
+
+    // Set the initial time left to 120 seconds
     let timeLeft = 120;
+
+    // Set an interval that updates the countdown every second
     const timerInterval = setInterval(() => {
+      // Calculate the minutes and seconds remaining and format them with leading zeros
       const minutes = Math.floor(timeLeft / 60).toString().padStart(2, '0');
       const seconds = (timeLeft % 60).toString().padStart(2, '0');
-      otpCountDown.innerText =
-        `${minutes}:${seconds}`;
+
+      // Update the text of the countdown element with the formatted time
+      otpCountDown.innerText = `${minutes}:${seconds}`;
+
+      // Decrement the time left by one second
       if (timeLeft-- <= 0) {
+        // If the time has run out, clear the interval to stop the countdown
         clearInterval(timerInterval);
 
+        // Show the 'resend-otp' button and disable the submit button
         const resendOtp = document.getElementById('resend-otp');
         resendOtp.classList.remove("hidden");
+        otpVerificationForm.querySelector("button[type='submit']").disabled = true;
 
+        // Add a click event listener to the 'resend-otp' button that sends a new OTP and restarts the countdown
         resendOtp.addEventListener("click", e => {
           e.preventDefault();
 
-          console.log("resend OTP")
-
           axios.get("/api/v1/auth/resend-otp").then(res => {
-            console.log(res);
+            if (res.status === 201) {
+              // If the OTP was successfully sent, show a success notification, hide the 'resend-otp' button, enable the submit button, and restart the countdown
+              ShowNoty().success("OTP successfully send");
+              resendOtp.classList.add("hidden");
+              otpVerificationForm.querySelector("button[type='submit']").disabled = false;
+              countdown();
+            }
           }).catch(err => {
-            alert(err.message)
+            // If there was an error sending the OTP, display an error message and disable the submit button
+            addError(document.querySelector(".errorDiv"), err.message);
+            otpVerificationForm.querySelector("button[type='submit']").disabled = true;
           })
         })
       }
     }, 1000);
   }
+
   countdown();
 }
 
@@ -166,10 +187,15 @@ loginForm &&
     formValidate(loginForm, fields, (data, errorEl) => {
       axios.post("/api/v1/auth/login", data).then(res => {
         if (res.status === 200) {
-          location.replace("/");
+          ShowNoty().success("User Login successfully.")
+          setTimeout(() => {
+            location.replace("/");
+          }, 1000)
         }
       }).catch(err => {
-        console.log(err);
+        // console.log(err);
+        addError(errorEl, err.response.data.message);
+        // ShowNoty().error(err.response.data.message);
       })
     });
   });

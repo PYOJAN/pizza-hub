@@ -9,7 +9,7 @@ class CartControllers {
   cart = catchAsync(async (req, res, next) => {
     return res
       .status(200)
-      .render("pages/customers/cart", {
+      .render("pages/customers/cart/cart", {
         title: "Cart Items",
         user: {
           isLogin: req.user ? true : false,
