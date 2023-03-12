@@ -7,9 +7,9 @@
   <div
     class="relative main flex flex-col justify-center items-center px-0 md:px-16 overflow-x-auto max-w-[70%] w-3/5 md:w-full">
     <table class="w-full text-sm text-left text-gray-500 ">
-      <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+      <thead class="text-xs text-slate-700 uppercase bg-slate-400">
         <tr>
-          <th colspan="4" class="border-b-2">
+          <th colspan="4" class="border-b-0">
             <div class="flex flex-row py-3 px-4">
               <div class="icon w-8">
                 <svg xmlns="http://www.w3.org/2000/svg" id="Layer_1" data-name="Layer 1" class="fill-slate-700"
@@ -24,6 +24,12 @@
         </tr>
       </thead>
       <tbody>
+        <tr class="bg-white border-b-2 bg-slate-300 text-center font-semibold">
+          <td>Product</td>
+          <td>Quantity</td>
+          <td>Price</td>
+          <td>Total Price</td>
+        </tr>
         <% cart.items.forEach(item => { %>
         <%- include('./ordered-card.ejs', {item}) %>
         <%})%>
@@ -31,7 +37,7 @@
     </table>
 
     <!-- Bill form   -->
-    <%- include('./bill-form.ejs')%>
+    <%- include('./bill-form.ejs', {subtotal:cart.totalPrice})%>
 
   </div>
 

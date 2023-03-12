@@ -1,4 +1,5 @@
 import { catchAsync } from "../../../../utils/utils";
+import Menu from "../../../models/menuModel";
 
 class CartControllers {
   /**
@@ -37,6 +38,7 @@ class CartControllers {
 
     const data = req.body;
     const session = req.session;
+
     if (!session.cart) {
       session.cart = {
         items: [],
@@ -45,23 +47,50 @@ class CartControllers {
       };
     }
 
+    // Find Item from database
+    const selectedMenuItem = await Menu.findById(data._id);
+
     const cart = session.cart;
     // check if pizza does not exist
     const existingPizzaIndex = cart.items.findIndex(
       (item) => item._id === data._id
     );
+
     if (existingPizzaIndex === -1) {
-      cart.items.push({ ...data, qty: 1 });
-      cart.totalPrice += data.price;
+      cart.items.push({
+        _id: selectedMenuItem._id,
+        name: selectedMenuItem.name,
+        price: selectedMenuItem.price,
+        size: selectedMenuItem.size,
+        image: selectedMenuItem.image,
+        qty: 1
+      });
+      cart.totalPrice += selectedMenuItem.price;
       cart.totalQty += 1;
     } else {
-      cart.items[existingPizzaIndex].qty += 1;
-      cart.totalPrice += data.price;
-      cart.totalQty += 1;
+      switch (data.updateType) {
+        case 'DECREMENT':
+          cart.items[existingPizzaIndex].qty -= 1;
+          cart.totalPrice -= selectedMenuItem.price;
+          // cart.totalQty -= 1;
+          break;
+
+        case "INCREMENT":
+          cart.items[existingPizzaIndex].qty += 1;
+          cart.totalPrice += selectedMenuItem.price;
+          // cart.totalQty += 1;
+          break;
+
+        default:
+          cart.items[existingPizzaIndex].qty += 1;
+          cart.totalPrice += selectedMenuItem.price;
+          cart.totalQty += 1;
+          break;
+      }
     }
     // res.locals.qty = session.cart.totalQty;
     return res.status(201).json({
-      data: session,
+      // data: session,
       message: "Cart updated successfully",
       totalQty: session.cart.totalQty,
     });
