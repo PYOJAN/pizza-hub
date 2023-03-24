@@ -23,41 +23,27 @@ class AuthControllers {
    * @param {function} next - The next function to be called
    */
   login = catchAsync(async (req, res, next) => {
-    /**
-     * Destructure the email and password from the request body
-     * @type {string}
-     */
+
+    // Destructure the email and password from the request body
     const { email, password } = req.body;
 
-    console.log(email, password)
-
-    /**
-     * Find the user with the provided email address and select the password field
-     * @type {User}
-     */
+    //  Find the user with the provided email address and select the password field
     const user = await User.findOne({ email }).select("+password");
 
     if (!user) return next(new Error("This user is not registered yet!"));
 
-    /**
-     * Validate the password provided against the hashed password stored in the database
-     * @type {boolean}
-     */
+    // Validate the password provided against the hashed password stored in the database
     const isValidPass = await user.validatePassword(password, user.password);
 
     if (!isValidPass) return next(new Error("Invalid credentials"));
 
-    /**
-     * Get the JSON Web Token (JWT) and expiration time for the user
-     * @type {object}
-     * @property {string} token - The JWT for the user
-     * @property {Date} expireIn - The date when the JWT will expire
-     */
+
+    //  * Get the JSON Web Token (JWT) and expiration time for the user
+    //  * @property {string} token - The JWT for the user
+    //  * @property {Date} expireIn - The date when the JWT will expire
     const { token, expireIn } = user.getJwtToken();
 
-    /**
-     * Send the token in a secure and httpOnly cookie
-     */
+    // Send the token in a secure and httpOnly cookie
     res.cookie("token", `Bearer ${token}`, {
       expires: expireIn,
       secure: true,
@@ -70,7 +56,7 @@ class AuthControllers {
 
   /**
    * Renders the Register page with relevant content.
-   * @route GET /login
+   * @route GET /register
    * @returns {Object} Rendered view of the Register page
    */
   registerRender = catchAsync(async (req, res, next) => {
@@ -81,7 +67,7 @@ class AuthControllers {
   });
   /**
    * Renders the Register page with relevant content.
-   * @route GET /login
+   * @route GET /register
    * @returns {Object} Rendered view of the Register page
    */
   register = catchAsync(async (req, res, next) => {
@@ -96,18 +82,10 @@ class AuthControllers {
     const hashedOtpData = Otp.genOtp(
       JSON.stringify({ email: newUser.email, id: newUser._id })
     );
-    console.log(hashedOtpData.OTP)
-
-    // Sending verification mail to user
-    // sendMail({
-    //   to: "pintuprajapati4@gmail.com",
-    //   subject: "Testing mail",
-    //   text: JSON.stringify(newUser),
-    // });
 
     // Refresh Token for resend OTP if it is expired
     const expIn = new Date(Number(new Date()) + 1000 * 60 * 15); // cookies life for the 15 mintus
-    const {token, _} = newUser.getJwtToken("15m");
+    const { token, _ } = newUser.getJwtToken("15m");
     res.cookie('refreshToken', `RefreshToken ${token}`, {
       expires: expIn,
       secure: true,
@@ -115,12 +93,23 @@ class AuthControllers {
     });
     // OTP Token
     const otpToken = `${newUser._id}.${hashedOtpData.hash}.${hashedOtpData.exIn}`;
-    const ttl = new Date(Number( hashedOtpData.exIn)); // cookies life for the 2 mintus
+    const ttl = new Date(Number(hashedOtpData.exIn)); // cookies life for the 2 mintus
     res.cookie('otpToken', otpToken, {
       expires: ttl,
       secure: true,
       httpOnly: true,
     });
+
+    // Sending verification mail to user
+    sendMail({
+      to: newUser.email,
+      subject: "Testing mail",
+      OTP: {
+        otp: hashedOtpData.OTP,
+        validFor: "2 Mint"
+      }
+    });
+
     res.status(201).json({
       message: "Register successfully",
       status: "success",
@@ -192,18 +181,10 @@ class AuthControllers {
     const hashedOtpData = Otp.genOtp(
       JSON.stringify({ email: user.email, id: user._id })
     );
-    console.log(hashedOtpData.OTP)
-
-    // Sending verification mail to user
-    // sendMail({
-    //   to: "pintuprajapati4@gmail.com",
-    //   subject: "Testing mail",
-    //   text: JSON.stringify(newUser),
-    // });
 
     // Refresh Token for resend OTP if it is expired
     const expIn = new Date(Number(new Date()) + 1000 * 60 * 15); // cookies life for the 15 mintus
-    const {token, expireIn} = user.getJwtToken("15m");
+    const { token, expireIn } = user.getJwtToken("15m");
     res.cookie('refreshToken', `RefreshToken ${token}`, {
       expires: expIn,
       secure: true,
@@ -218,6 +199,14 @@ class AuthControllers {
       secure: true,
       httpOnly: true,
     });
+
+    // Sending verification mail to user
+    // sendMail({
+    //   to: user.email,
+    //   subject: "Testing mail",
+    //   OTP: 
+    // });
+
     res.status(201).json({
       message: "OTP resended successfully",
       status: "success",
@@ -241,9 +230,6 @@ class AuthControllers {
     // Redirect to the home page
     res.status(301).redirect('/');
   });
-
-
-
 
   /**
    * Returns an error message for any method other than GET on the home page route.

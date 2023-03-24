@@ -1,9 +1,8 @@
 <!-- if cart is empty -->
-<%if(!cart) {%>
+<%if(cart.items?.length <= 0) {%>
 <%- include('./empty-cart-icon.ejs') %>
 <%} else {%>
 <section class="cart">
-
   <div
     class="relative main flex flex-col justify-center items-center px-0 md:px-16 overflow-x-auto max-w-[70%] w-3/5 md:w-full">
     <table class="w-full text-sm text-left text-gray-500 ">
@@ -22,17 +21,17 @@
             </div>
           </th>
         </tr>
-      </thead>
-      <tbody>
         <tr class="bg-white border-b-2 bg-slate-300 text-center font-semibold">
-          <td>Product</td>
-          <td>Quantity</td>
-          <td>Price</td>
-          <td>Total Price</td>
+          <th>Product</th>
+          <th>Quantity</th>
+          <th>Price</th>
+          <th>Total Price</th>
         </tr>
-        <% cart.items.forEach(item => { %>
-        <%- include('./ordered-card.ejs', {item}) %>
-        <%})%>
+      </thead>
+      <tbody id="cart-item-wrapper">
+          <% cart.items.forEach(item => { %>
+          <%- include('./ordered-card.ejs', {item}) %>
+          <%})%>
       </tbody>
     </table>
 

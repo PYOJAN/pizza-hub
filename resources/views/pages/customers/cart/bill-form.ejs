@@ -1,3 +1,5 @@
+<% const formFields = [ { name: 'email', label: 'Email', type: 'email' }, {
+  name: 'password', label: 'Password', type: 'password' } ];%>
 
 <div class="bill-form self-end w-full md:w-1/2 flex flex-col mt-4">
   <div class="w-full flex flex-row h-10 justify-between px-4 border-b">
@@ -12,7 +14,7 @@
     <h4 class="font-bold capitalize tracking-wide">Sales Tax:</h4>
     <div>
       <span>₹</span>
-      <span>200</span>
+      <span class="tax-price">200</span>
       <span>/-</span>
     </div>
   </div>
@@ -20,21 +22,28 @@
     <h4 class="font-bold capitalize tracking-wide">Grand Total:</h4>
     <div class="text-2xl">
       <span>₹</span>
-      <span>700</span>
+      <span id="grand-total"><%=Number(subtotal) + 200%></span>
       <span>/-</span>
     </div>
   </div>
-  <div class="w-full flex flex-row justify-end px-4">
+  <div class="w-full flex flex-col justify-end px-4">
     <!-- With Login -->
+    <%if(user.isLogin) {%>
+    <form class="w-full p-3">
+      <%- include("../../../partials/form/formField.ejs", {field: {label: "Mobile", type: "text", name: "mobile", placeholder: 9599000013}}) %>
+      <%- include("../../../partials/form/formField.ejs", {field: {label: "Address", type: "text", name: "mobile", placeholder: "New Ashoke nagar 110099"}}) %>
+    </form>
     <button
       class="flex justify-center items-center text-base tracking-wide font-medium bg-rose-400 hover:bg-rose-500 hover-anime px-4 py-1 rounded-full text-rose-50 mt-4">
       Order now
     </button>
     <!-- Without Login -->
-    <!-- <a href="/login"
+    <%}else{%>
+    <a href="/login"
       class="flex justify-center items-center text-base tracking-wide font-medium bg-rose-400 hover:bg-rose-500 hover-anime px-4 py-1 rounded-full text-rose-50 mt-4">
       Login to continue
-    </a> -->
+    </a>
+    <%}%>
   </div>
 
 </div>

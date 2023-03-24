@@ -9,6 +9,7 @@ import { globalError, error404Handle } from "./error/";
 import webRouters from "./routes/web";
 import apiRouters from "./routes/api"
 import Gaurd from "./app/http/middlewares/authMiddleware";
+import addEmptyCartIfNotThere from "./app/http/middlewares/cartItem.moddleware";
 
 const app = express();
 
@@ -51,7 +52,7 @@ app.use(
   }),
 );
 
-app.use("/", [Gaurd.isUserLoggedin], webRouters);
+app.use("/", [addEmptyCartIfNotThere, Gaurd.isUserLoggedin], webRouters);
 app.use("/api/v1/auth", apiRouters)
 
 app.all("*", error404Handle);

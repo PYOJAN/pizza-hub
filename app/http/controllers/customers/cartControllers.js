@@ -1,5 +1,12 @@
 import { catchAsync } from "../../../../utils/utils";
 import Menu from "../../../models/menuModel";
+import {
+  findCartItem,
+  addNewItemToCart,
+  incrementCartItem,
+  decrementCartItem,
+  removeCartItem
+} from '../../../services/cartService'
 
 class CartControllers {
   /**
@@ -26,18 +33,9 @@ class CartControllers {
    * @returns {Object} An object representing the updated cart value
    */
   updateCart = catchAsync(async (req, res, next) => {
-    // const cart = {
-    //   items: [
-    //     pizzaId: {
-    //       item: pizzaObject, qty: 0
-    //     },
-    //     totalQty: 0,
-    //     totalPrice: 0
-    //   ]
-    // }
-
     const data = req.body;
     const session = req.session;
+    console.log("body", data)
 
     if (!session.cart) {
       session.cart = {
@@ -46,55 +44,69 @@ class CartControllers {
         totalPrice: 0,
       };
     }
-
     // Find Item from database
     const selectedMenuItem = await Menu.findById(data._id);
+    console.log("selectedMenuItem", selectedMenuItem)
 
     const cart = session.cart;
-    // check if pizza does not exist
-    const existingPizzaIndex = cart.items.findIndex(
-      (item) => item._id === data._id
-    );
 
-    if (existingPizzaIndex === -1) {
-      cart.items.push({
-        _id: selectedMenuItem._id,
-        name: selectedMenuItem.name,
-        price: selectedMenuItem.price,
-        size: selectedMenuItem.size,
-        image: selectedMenuItem.image,
-        qty: 1
+    if (!selectedMenuItem) {
+      return res.status(404).json({
+        message: "Menu item not found",
       });
-      cart.totalPrice += selectedMenuItem.price;
-      cart.totalQty += 1;
-    } else {
-      switch (data.updateType) {
-        case 'DECREMENT':
-          cart.items[existingPizzaIndex].qty -= 1;
-          cart.totalPrice -= selectedMenuItem.price;
-          // cart.totalQty -= 1;
-          break;
-
-        case "INCREMENT":
-          cart.items[existingPizzaIndex].qty += 1;
-          cart.totalPrice += selectedMenuItem.price;
-          // cart.totalQty += 1;
-          break;
-
-        default:
-          cart.items[existingPizzaIndex].qty += 1;
-          cart.totalPrice += selectedMenuItem.price;
-          cart.totalQty += 1;
-          break;
-      }
     }
-    // res.locals.qty = session.cart.totalQty;
+
+    const existingItem = findCartItem(cart.items, data._id);
+
+    switch (data.updateType) {
+      case "DECREMENT":
+        if (existingItem) {
+          decrementCartItem(existingItem, cart, selectedMenuItem);
+        }
+        break;
+      case "INCREMENT":
+        if (existingItem) {
+          incrementCartItem(existingItem, cart, selectedMenuItem);
+        }
+        break;
+      case "REMOVE":
+        if (existingItem) {
+          removeCartItem(existingItem, cart);
+        }
+        break;
+      default:
+        addNewItemToCart(cart, selectedMenuItem);
+        break;
+    }
+
+
+    let grandTotal = 0;
+    const tax = 200;
+    session.cart.items.forEach(item => {
+      grandTotal += (item.price * item.qty);
+    });
+
+    // return res.status(201).json({
+    //   message: "Cart updated successfully",
+    //   updatedData: {
+    //     ...session.cart.items.find((item) => item._id === data._id),
+    //     totalPrice: session.cart.totalPrice,
+    //     totalQty: session.cart.totalQty,
+    //     grandTotal: grandTotal + tax
+    //   },
+    // });
+
     return res.status(201).json({
-      // data: session,
       message: "Cart updated successfully",
-      totalQty: session.cart.totalQty,
+      data: {
+        items: session.cart.items,
+        totalPrice: session.cart.totalPrice,
+        totalQty: session.cart.totalQty,
+        grandTotal: grandTotal + tax
+      },
     });
   });
+
 
   /**
    * Returns an error message for any method other than GET on the home page route.
@@ -105,5 +117,7 @@ class CartControllers {
     return next(new Error("This method is not allowed"));
   }
 }
+
+
 
 export default new CartControllers();

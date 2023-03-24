@@ -1,20 +1,19 @@
-
-<tr class="bg-white border-b hover:bg-gray-100 cart-ordered-items" data-item_id="<%=item._id%>">
+export const cartItemTempleteHtml = (item) => {
+  return `
+  <tr class="bg-white border-b hover:bg-gray-100 cart-ordered-items" data-item_id="${item._id}">
   <td class="w-1/3 p-4">
     <div class="flex flex-row items-center">
       <div class="w-20 min-w-[50px]">
         <img src="/img/olive-mixed-pizza.png" alt="img" />
       </div>
-
       <div class="ml-5 text-slate-600">
-        <h1 class="font-bold text-lg capitalize mb-2"><%=item.name%></h1>
+        <h1 class="font-bold text-lg capitalize mb-2">${item.name}</h1>
         <span class="text-xs uppercase font-light text-rose-400 tracking-wider bg-rose-100 px-2 py-1 rounded-full">
-          <%= item.size%>
+          ${item.size}
         </span>
       </div>
     </div>
   </td>
-
   <td class="px-6 py-4 w-52">
     <div class="flex items-center space-x-3">
       <button
@@ -29,7 +28,7 @@
         </svg>
       </button>
       <div>
-        <input value="<%=item.qty%>" type="text" id=""
+        <input value="${item.qty}" type="text" id=""
           class="bg-gray-50 w-10 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block px-2 py-1 text-center "
           placeholder="1" required>
       </div>
@@ -48,18 +47,17 @@
   </td>
   <td class="px-6 py-4 font-semibold text-gray-900">
     <span>₹</span>
-    <span id="singlePrice"><%=item.price%></span>
+    <span id="singlePrice">${item.price}</span>
     <span>/-</span>
   </td>
   <td class="px-6 py-4 font-semibold text-gray-900 relative ">
     <span>
       <span>₹</span>
       <span id="totalPrice">
-        <%= (item.price * item.qty) %>
+        ${(item.price * item.qty)}
       </span>
       <span>/-</span>
     </span>
-
     <div role="button" class="remove-cart-item absolute top-1/2 -translate-y-1/2 right-10 w-6 h-6 cursor-pointer hover:scale-105">
       <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class='pointer-events-none'>
         <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
@@ -83,3 +81,5 @@
     </div>
   </td>
 </tr>
+  `;
+}

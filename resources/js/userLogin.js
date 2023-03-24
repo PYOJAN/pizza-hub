@@ -40,6 +40,12 @@ const userLogin = () => {
       });
     });
 
+
+  // User profile dropdown
+  const userAvatar = document.querySelector('.user-avatar');
+  userAvatar && userAvatar.addEventListener("click", e => {
+    document.getElementById('userDropdown').classList.toggle('hidden');
+  });
 }
 
 
